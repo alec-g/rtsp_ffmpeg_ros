@@ -1,0 +1,9 @@
+<library path="lib/librtsp_ffmpeg">
+  <class name="rtsp_ffmpeg/RTSPFFmpeg"
+         type="rtsp_ffmpeg::RTSPFFmpegNodelet"
+         base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet to publish a rtsp video stream using FFmpeg
+    </description>
+  </class>
+</library>
