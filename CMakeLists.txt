@@ -32,6 +32,9 @@ find_library(AVDEVICE_LIBRARY avdevice)
 find_path(SWSCALE_INCLUDE_DIR libswscale/swscale.h)
 find_library(SWSCALE_LIBRARY swscale)
 
+find_path(AVCODEC_INCLUDE_DIR libavcodec/avcodec.h)
+find_library(AVCODEC_LIBRARY avcodec)
+
 generate_dynamic_reconfigure_options(
   cfg/RTSPFFmpeg.cfg)
 
@@ -46,13 +49,14 @@ include_directories(
   ${AVUTIL_INCLUDE_DIR} 
   ${AVDEVICE_INCLUDE_DIR}
   ${SWSCALE_INCLUDE_DIR}
+  ${AVCODEC_INCLUDE_DIR}
 )
 
 add_library(${PROJECT_NAME} SHARED
   src/ffmpegdecoder.cpp
   src/rtsp_ffmpeg.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${AVUTIL_LIBRARY} ${AVDEVICE_LIBRARY} ${SWSCALE_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${AVUTIL_LIBRARY} ${AVDEVICE_LIBRARY} ${SWSCALE_LIBRARY} ${AVCODEC_LIBRARY})
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg ${catkin_EXPORTED_TARGETS})
 
 add_executable(rtsp_ffmpeg_node src/rtsp_ffmpeg_node.cpp)

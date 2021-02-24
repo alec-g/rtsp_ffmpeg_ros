@@ -56,16 +56,33 @@ void FFmpegDecoder::connect()
   av_register_all();
 
   pFormatCtx = avformat_alloc_context();
+  pFormatCtx->flags = AVFMT_FLAG_NOBUFFER | AVFMT_FLAG_FLUSH_PACKETS;
+  pFormatCtx->max_delay = 0;
+  pFormatCtx->probesize = 64;
 
   AVDictionary *avdic=NULL;
   char option_key[]="rtsp_transport";
   char option_value[]="tcp";
-
   av_dict_set(&avdic,option_key,option_value,0);
   char option_key2[]="max_delay";
-  char option_value2[]="100";
-
+  char option_value2[]="0";
   av_dict_set(&avdic,option_key2,option_value2,0);
+  
+  //char option_key3[]="fflags";
+  //char option_value3[]="nobuffer";
+  //av_dict_set(&avdic,option_key3,option_value3,0);
+  //char option_key4[]="flags";
+  //char option_value4[]="lowdelay";
+  //av_dict_set(&avdic,option_key4,option_value4,0);
+  //char option_key5[]="probesize";
+  //char option_value5[]="32";
+  //av_dict_set(&avdic,option_key5,option_value5,0);
+  //char option_key6[]="analyzeduration";
+  //char option_value6[]="0";
+  //av_dict_set(&avdic,option_key6,option_value6,0);
+  //char option_key7[]="strict";
+  //char option_value7[]="experimental";
+  //av_dict_set(&avdic,option_key7,option_value7,0);
 
   if (avformat_open_input(&pFormatCtx, path.c_str(), NULL, &avdic) != 0)
   {
@@ -102,11 +119,23 @@ void FFmpegDecoder::connect()
   pCodecCtx = pFormatCtx->streams[videoStream]->codec;
   pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
 
+  av_opt_set(pCodecCtx->priv_data, "tune", "zerolatency", 0);
+  av_opt_set(pCodecCtx->priv_data, "crf", "23", 0);
+  av_opt_set(pCodecCtx->priv_data, "me_method", "7", 0);
+
+  // AVRational ar = av_d2q(1. / 25, H264_TIMESTAMP_FREQ);
+
   pCodecCtx->bit_rate = 0;
   pCodecCtx->time_base.num = 1;
-  pCodecCtx->time_base.den = 10;
+  pCodecCtx->time_base.den = 25;
   pCodecCtx->frame_number = 1;
-
+  pCodecCtx->thread_count = 1;
+  pCodecCtx->delay = 0;
+  pCodecCtx->max_b_frames = 0;
+  pCodecCtx->refs = 3;
+  pCodecCtx->gop_size = 25./1.;
+  pCodecCtx->me_subpel_quality = 5;
+  pCodecCtx->trellis = 0;
 
   if (pCodec == NULL)
   {
@@ -179,7 +208,7 @@ void FFmpegDecoder::decode()
       }
     }
     av_free_packet(packet);
-    std::this_thread::sleep_for(duration);
+    // std::this_thread::sleep_for(duration);
   }
 
   bConnected = false;
