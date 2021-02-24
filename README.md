@@ -1,7 +1,7 @@
 # rtsp_ffmpeg_ros
 A package to publish RTSP video streams on a ROS image topic (including camera info). This package is an extension of video_stream_opencv https://github.com/ros-drivers/video_stream_opencv. Although the implmentation in video_stream_opencv for RTSP video streams works, the opencv VideoCapture implementation can introduce lag / delay in the image output due to the decoding process. This package implements FFMPEG for decoding the RTSP stream which results in a quicker pipeline and reduced output video lag.
 
-## Prerequisite
+## Setup
 Install libraries to use ffmpeg
 ```
 sudo apt-get install libavcodec-dev
